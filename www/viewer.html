@@ -24,6 +24,8 @@
 </head>
 
 <body>
+    <label for="viewables">Choose a viewable:</label>
+    <select id="viewables" onchange="selectViewable()"></select>
     <!-- The Viewer will be instantiated here -->
     <div id="MyViewerDiv"></div>
     <!-- Custom script -->
@@ -35,6 +37,7 @@
             getAccessToken: getForgeToken
         };
         var documentId = 'urn:' + getUrlParameter('urn');
+        var viewables;
 
         // Run this when the page is loaded
         Autodesk.Viewing.Initializer(options, function onInitialized(){
@@ -42,6 +45,13 @@
             viewerApp.registerViewer(viewerApp.k3D, Autodesk.Viewing.Private.GuiViewer3D);
             viewerApp.loadDocument(documentId, onDocumentLoadSuccess, onDocumentLoadFailure);
         });
+
+        // When the drop-down view is selected we reload the viewer to pick new viewable.
+        function selectViewable() {
+            var indexViewable = document.getElementById("viewables").selectedIndex;
+            // Load anotehr viewable from selectedIndex of drop-down.
+            viewerApp.selectItem(viewables[indexViewable].data, onItemLoadSuccess, onItemLoadFail);
+        }
 
         /**
         * Autodesk.Viewing.Document.load() success callback.
@@ -51,13 +61,22 @@
             // We could still make use of Document.getSubItemsWithProperties()
             // However, when using a ViewingApplication, we have access to the **bubble** attribute,
             // which references the root node of a graph that wraps each object from the Manifest JSON.
-            var viewables = viewerApp.bubble.search({'type':'geometry'});
+            viewables = viewerApp.bubble.search({'type':'geometry'});
             if (viewables.length === 0) {
                 console.error('Document contains no viewables.');
                 return;
             }
 
-            // Choose any of the avialble viewables
+            // populate our simple drop down with the viewable name
+            var sel = document.getElementById('viewables');
+            for(var i = 0; i < viewables.length; i++) {
+                console.log(i, viewables[i].data.name);
+                var opt = document.createElement('option');
+                opt.innerHTML = viewables[i].data.name;
+                opt.value =  viewables[i].data.name;
+                sel.appendChild(opt);
+            }
+            // Choose the first available viewable
             viewerApp.selectItem(viewables[0].data, onItemLoadSuccess, onItemLoadFail);
         }
 
