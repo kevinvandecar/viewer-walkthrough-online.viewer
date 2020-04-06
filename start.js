@@ -182,7 +182,8 @@ app.post('/api/forge/datamanagement/bucket/upload', upload.single('fileToUpload'
                 'Content-Disposition': req.file.originalname,
                 'Content-Length': filecontent.length
             },
-            data: filecontent
+            data: filecontent,
+            maxContentLength: 50 * 1024 * 1024 // this adds support up to 50 MB, increase for larger files as needed. The default is usually not enough.
         })
             .then(function (response) {
                 // Success
@@ -218,7 +219,13 @@ app.get('/api/forge/modelderivative/:urn', function (req, res) {
                 'formats': [
                     {
                         'type': format_type,
-                        'views': format_views
+                        'views': format_views,
+                        // Add this for the Revit Rooms and Sapces features coming from the "generateMasterViews" feature.
+                        // WARNING! This will increase translation time, depending on how many 
+                        // "master views" (aka phases) you have in the source Revit model
+                        'advanced' : {
+                            'generateMasterViews': true
+                        }
                     }
                 ]
             }
