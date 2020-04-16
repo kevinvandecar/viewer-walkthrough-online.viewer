@@ -12,6 +12,7 @@
 
 # Description
 This sample is part of the [Online Viewer Walkthrough](https://forge.autodesk.com/developer/learn/viewer-app).
+**NOTE! This version of the sample includes how to use the generateMasterViews and then in the Viewer code, it shows how to iterate simplay over all views to be able to select viewable to view.**
 
 In this sample, we will be creating a simple web page that allows end users to upload some files to Forge storage service, then translate them and display them in a web browser.
 
